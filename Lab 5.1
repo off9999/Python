@@ -1,0 +1,19 @@
+n = int(input("n = "))
+
+print(f"Enter {n} array elements:")
+
+arr = [float(input()) for _ in range(n)]
+
+print("Original array:", arr)
+емента
+max_negative = None
+
+for num in arr:
+    if num < 0:
+        if max_negative is None or num > max_negative:
+            max_negative = num
+
+if max_negative is not None:
+    print(f"Максимальний від'ємний елемент: {max_negative}")
+else:
+    print("Від'ємних елементів у масиві не знайдено.")
