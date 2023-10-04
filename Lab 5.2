@@ -1,0 +1,8 @@
+array = [[0] * 7 for _ in range(7)]
+
+for i in range(7):
+    for j in range(7):
+        array[i][j] = j - i
+
+for row in array:
+    print(" ".join(map(str, row)))
