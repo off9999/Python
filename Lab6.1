@@ -1,0 +1,14 @@
+def find_duplicates_and_print(input_list):
+  duplicates = []
+
+  for item in input_list:
+      if input_list.count(item) > 1 and item not in duplicates:
+          duplicates.append(item)
+
+  print("Дублікати в списку:", duplicates)
+
+  return duplicates
+
+previous_list = ['1', '2', '3', 'малина', 'х', '1', '3', 'х']
+
+duplicates = find_duplicates_and_print(previous_list)
