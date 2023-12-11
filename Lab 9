@@ -1,0 +1,54 @@
+def create_file_with_text(file_name):
+  user_input = input("Введіть текст: ")
+  with open(file_name, 'w', encoding='utf-8') as file:
+    file.write(user_input)
+  print(f"Файл '{file_name}' створено з введеним текстом.")
+  read_and_print(file_name)
+
+
+def modify_and_write_to_files(input_file):
+  try:
+    with open(input_file, 'r',
+              encoding='utf-8') as file1, open('TF19_2.txt',
+                                               'w',
+                                               encoding='utf-8') as file2:
+      content1 = file1.read()
+      modified_content2 = ' '.join(word for word in content1.split()
+                                   if len(word) == 1)
+      modified_content2 = ' '.join(modified_content2.split())
+      file2.write(modified_content2)
+    print("Зміст із однією літерою записано у 'TF19_2.txt'.")
+
+    with open(input_file, 'r+', encoding='utf-8') as file:
+      content = file.read()
+      modified_content = ' '.join(word for word in content.split()
+                                  if len(word) > 1)
+      modified_content = ' '.join(modified_content.split())
+      file.seek(0)
+      file.write(modified_content)
+      file.truncate()
+    print(f"Файл '{input_file}' успішно змінено.")
+
+  except FileNotFoundError:
+    print(f"Файл '{input_file}' не знайдено.")
+
+
+def read_and_print(file_name):
+  try:
+    with open(file_name, 'r', encoding='utf-8') as file:
+      content = file.read()
+      print(f"Зміст файлу '{file_name}':")
+      print(content)
+  except FileNotFoundError:
+    print(f"Файл '{file_name}' не знайдено.")
+
+
+if __name__ == "__main__":
+  file1 = "TF19_1.txt"
+
+  create_file_with_text(file1)
+
+  modify_and_write_to_files(file1)
+
+  read_and_print(file1)
+  read_and_print("TF19_2.txt")
