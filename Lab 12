@@ -1,0 +1,198 @@
+import json
+import random
+
+
+def generate_grades_data():
+  return [[random.randint(1, 12) for _ in range(5)] for _ in range(10)]
+
+
+def generate_surnames():
+  return [
+      'Овсієнко', 'Шевченко', 'Лаптєв', 'Голубничий', 'Гудим', 'Зякун',
+      'Зелинський', 'Кравченко', 'Мірошниченко', 'Мельніков'
+  ]
+
+
+def generate_subjects():
+  return ['Математика', 'Фізика', 'Хімія', 'Англійська', 'Біологія']
+
+
+def calculate_sums(grades_data):
+  return [sum(student_grades) for student_grades in grades_data]
+
+
+def find_extreme_indices(sums, find_max=True):
+  extreme_value = max(sums) if find_max else min(sums)
+  return [index for index, value in enumerate(sums) if value == extreme_value]
+
+
+def display_student_results(surnames, grades_data, subjects):
+  for i in range(10):
+    print(
+        f"{surnames[i]}: {', '.join([f'{subjects[j]}: {grades_data[i][j]}' for j in range(5)])}"
+    )
+
+
+def create_json_object(surnames, grades_data, subjects):
+  data = []
+  for i in range(10):
+    student_data = {
+        'Surname': surnames[i],
+        'Grades': {subjects[j]: grades_data[i][j]
+                   for j in range(5)}
+    }
+    data.append(student_data)
+  return data
+
+
+def write_json_file(json_file_path, data):
+  with open(json_file_path, 'w', encoding='utf-8') as jsonfile:
+    json.dump(data, jsonfile, ensure_ascii=False, indent=4)
+  print(f"Дані записані в файл '{json_file_path}'.")
+
+
+def read_json_file(json_file_path):
+  try:
+    with open(json_file_path, 'r', encoding='utf-8') as jsonfile:
+      data = json.load(jsonfile)
+      return data
+  except FileNotFoundError:
+    print(f"Помилка: Файл '{json_file_path}' не знайдено.")
+    return None
+  except Exception as e:
+    print("Помилка:", str(e))
+    return None
+
+
+def display_json_content(json_file_path):
+  data = read_json_file(json_file_path)
+  if data:
+    print("Вміст JSON файлу:")
+    print(json.dumps(data, ensure_ascii=False, indent=4))
+
+
+def add_record(json_file_path, new_record):
+  data = read_json_file(json_file_path) or []
+  data.append(new_record)
+  write_json_file(json_file_path, data)
+
+
+def remove_record_by_surname(json_file_path, surname):
+  data = read_json_file(json_file_path)
+  if data:
+    found_records = [
+        record for record in data
+        if record.get('Surname').lower() == surname.lower()
+    ]
+    if found_records:
+      for found_record in found_records:
+        data.remove(found_record)
+        print(f"Вилучено запис за прізвищем '{surname}':")
+        print(json.dumps(found_record, ensure_ascii=False, indent=4))
+      write_json_file(json_file_path, data)
+    else:
+      print(f"Записів за прізвищем '{surname}' не знайдено.")
+  else:
+    print(f"Помилка: Файл '{json_file_path}' не знайдено.")
+
+
+def search_by_field(json_file_path, field_name, search_value):
+  data = read_json_file(json_file_path)
+  if data:
+    found_records = []
+    for record in data:
+      if field_name == 'Surname':
+        if record.get(field_name).lower() == search_value.lower():
+          found_records.append(record)
+      elif field_name in record['Grades']:
+        if record['Grades'][field_name] == int(search_value):
+          found_records.append(record)
+    if found_records:
+      print(
+          f"Знайдені записи за полем '{field_name}' зі значенням '{search_value}':"
+      )
+      print(json.dumps(found_records, ensure_ascii=False, indent=4))
+    else:
+      print(
+          f"Записів за полем '{field_name}' та значенням '{search_value}' не знайдено."
+      )
+
+def menu(json_file_path):
+  while True:
+    print("\nМеню:")
+    print("1. Вивести вміст JSON файлу.")
+    print("2. Додати новий запис в JSON файл.")
+    print("3. Видалити запис з JSON файлу за прізвищем.")
+    print("4. Пошук за полем в JSON файлі.")
+    print("5. Вийти.")
+
+    choice = input("Оберіть дію (1-5): ").strip()
+
+    if choice == '1':
+      display_json_content(json_file_path)
+    elif choice == '2':
+      new_record = {
+          'Surname': input("Введіть прізвище нового учня: "),
+          'Grades': {}
+      }
+      for subject in subjects:
+        new_record['Grades'][subject] = int(
+            input(f"Введіть оцінку з {subject}: "))
+      add_record(json_file_path, new_record)
+    elif choice == '3':
+      surname_to_remove = input("Введіть прізвище для вилучення: ")
+      remove_record_by_surname(json_file_path, surname_to_remove)
+    elif choice == '4':
+      print("Оберіть поле для пошуку:")
+      print("1. Прізвище")
+      print("2. Математика")
+      print("3. Фізика")
+      print("4. Хімія")
+      print("5. Англійська")
+      print("6. Біологія")
+      field_choice = input("Оберіть поле (1-6): ").strip()
+
+      field_name = ''
+      if field_choice == '1':
+        field_name = 'Surname'
+      elif field_choice == '2':
+        field_name = 'Математика'
+      elif field_choice == '3':
+        field_name = 'Фізика'
+      elif field_choice == '4':
+        field_name = 'Хімія'
+      elif field_choice == '5':
+        field_name = 'Англійська'
+      elif field_choice == '6':
+        field_name = 'Біологія'
+
+      search_value = input(
+          f"Введіть значення для пошуку за полем '{field_name}': ").strip()
+      search_by_field(json_file_path, field_name, search_value)
+    elif choice == '5':
+      print("Вихід з програми.")
+      break
+    else:
+      print("Невірний вибір. Будь ласка, введіть число від 1 до 5.")
+
+grades_data = generate_grades_data()
+surnames = generate_surnames()
+subjects = generate_subjects()
+sums = calculate_sums(grades_data)
+max_indices = find_extreme_indices(sums, find_max=True)
+min_indices = find_extreme_indices(sums, find_max=False)
+
+print(
+    f"Учень з найбільшою сумою оцінок ({max(sums)} балів): {', '.join([surnames[i] for i in max_indices])}"
+)
+print(
+    f"Учень з найменшою сумою оцінок ({min(sums)} балів): {', '.join([surnames[i] for i in min_indices])}"
+)
+
+display_student_results(surnames, grades_data, subjects)
+
+json_file_path = 'data.json'
+json_data = create_json_object(surnames, grades_data, subjects)
+write_json_file(json_file_path, json_data)
+
+menu(json_file_path)
