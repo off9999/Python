@@ -1,0 +1,78 @@
+# -*- coding: cp1251 -*-
+
+import csv
+
+def display_csv_contents(csv_file_path):
+    try:
+        with open(csv_file_path, 'r', encoding='cp1251') as csvfile:
+            reader = csv.reader(csvfile)
+
+            print("Вміст .csv файлу:")
+            for row in reader:
+                print(row)
+
+    except FileNotFoundError:
+        print(f"Помилка: Файл '{csv_file_path}' не знайдено.")
+    except Exception as e:
+        print("Помилка:", str(e))
+
+def find_max_min_values(csv_file_path):
+    try:
+        with open(csv_file_path, 'r', encoding='cp1251') as csvfile:
+            reader = csv.reader(csvfile)
+            header = next(reader)  
+            columns_count = len(header)
+
+            numeric_columns = list(range(3, columns_count))
+
+            max_value = float('-inf')
+            min_value = float('inf')
+            max_country = ''
+            min_country = ''
+
+            csvfile.seek(0)
+            next(reader)  
+
+            for row_num, row in enumerate(reader, start=2):  
+                country = row[2]  
+                for col_index in numeric_columns:
+                    try:
+                        value = float(row[col_index])
+                        if value > max_value:
+                            max_value = value
+                            max_country = country
+                        if value < min_value:
+                            min_value = value
+                            min_country = country
+                    except ValueError:
+                        pass
+
+            if max_value == float('-inf') and min_value == float('inf'):
+                print("Помилка: Немає числових значень у вказаних стовпцях.")
+            else:
+                print(f"Максимальне значення: {max_value}, Країна: {max_country}")
+                print(f"Мінімальне значення: {min_value}, Країна: {min_country}")
+
+                output_file_path = 'max_min.csv'
+                with open(output_file_path, 'w', encoding='cp1251', newline='') as output_csv:
+                    writer = csv.writer(output_csv)
+                    writer.writerow(['Країна', 'Значення']) 
+                    writer.writerow(['Максимальне',  max_country, max_value])
+                    writer.writerow(['Мінімальне', min_country, min_value])
+
+                print(f"Результати збережено у файлі: {output_file_path}")
+
+    except FileNotFoundError:
+        print(f"Помилка: Файл '{csv_file_path}' не знайдено.")
+    except Exception as e:
+        print("Помилка:", str(e))
+
+csv_file_path = 'Data.csv'  
+display_csv_contents(csv_file_path)
+
+user_choice = input("Бажаєте визначити найбільше й найменше значення? (Так/Ні): ").strip().lower()
+
+if user_choice == 'так':
+    find_max_min_values(csv_file_path)
+else:
+    print("Дякую за використання програми.")
