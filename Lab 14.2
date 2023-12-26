@@ -1,0 +1,76 @@
+import pandas as pd
+import matplotlib.pyplot as plt
+from matplotlib.ticker import FuncFormatter
+
+# Завантаження даних з CSV-файлу
+df = pd.read_csv('Data.csv')
+
+# Вивід перших рядків для перевірки
+print(df.head())
+
+# Отримання років з назв колонок, виключаючи перші дві цифри
+years = [col.split(' ')[0][2:] for col in df.columns if col.startswith('20')]
+
+# 2.1 Побудова графіків
+plt.figure(figsize=(10, 5))
+plt.plot(
+    years,
+    df.loc[df['Country Name'] == 'Ukraine',
+           [col
+            for col in df.columns if col.startswith('20')]].values.flatten() /
+    1e6,
+    label='Україна',
+    marker='o')
+plt.plot(
+    years,
+    df.loc[df['Country Name'] == 'Germany',
+           [col
+            for col in df.columns if col.startswith('20')]].values.flatten() /
+    1e6,
+    label='Німеччина',
+    marker='o')
+
+plt.title('Динаміка населення за останні роки')
+plt.xlabel('Рік')
+plt.ylabel('Населення (мільйони)')
+plt.legend()
+plt.grid(True)
+
+# Задаємо форматер для шкали Y у мільйонах
+plt.gca().get_yaxis().set_major_formatter(
+    FuncFormatter(lambda x, _: f'{x:.0f}M'))
+
+plt.show()
+
+# 2.2 Стовпчасті діаграми
+country = input(
+    'Введіть країну для побудови діаграми (Україна або Німеччина): ')
+
+if country.lower() == 'україна':
+  plt.bar(years,
+          df.loc[df['Country Name'] == 'Ukraine',
+                 [col for col in df.columns
+                  if col.startswith('20')]].values.flatten() / 1e6,
+          color='blue')
+  plt.title('Динаміка населення України за останні роки')
+  plt.xlabel('Рік')
+  plt.ylabel('Населення (мільйони)')
+  plt.gca().get_yaxis().set_major_formatter(
+      FuncFormatter(lambda x, _: f'{x:.0f}M'))
+  plt.show()
+
+elif country.lower() == 'німеччина':
+  plt.bar(years,
+          df.loc[df['Country Name'] == 'Germany',
+                 [col for col in df.columns
+                  if col.startswith('20')]].values.flatten() / 1e6,
+          color='green')
+  plt.title('Динаміка населення Німеччини за останні роки')
+  plt.xlabel('Рік')
+  plt.ylabel('Населення (мільйони)')
+  plt.gca().get_yaxis().set_major_formatter(
+      FuncFormatter(lambda x, _: f'{x:.0f}M'))
+  plt.show()
+
+else:
+  print('Некоректний ввід. Введіть "Україна" або "Німеччина".')
