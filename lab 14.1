@@ -1,0 +1,33 @@
+import numpy as np
+import matplotlib.pyplot as plt
+
+# Задаємо значення x
+x_values = np.array([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10])
+
+# Обчислюємо відповідні значення y
+y_values = np.cos(x_values**2) / x_values
+
+# Побудова графіку
+plt.plot(x_values,
+         y_values,
+         linestyle='-',
+         color='blue',
+         linewidth=2,
+         label='Y(x) = cos(x^2)/x')
+
+# Додаємо осі
+plt.axhline(0, color='black', linewidth=0.5)
+plt.axvline(0, color='black', linewidth=0.5)
+
+# Додаємо назви осей
+plt.xlabel('X')
+plt.ylabel('Y')
+
+# Додаємо заголовок графіку
+plt.title('Графік функції Y(x) = cos(x^2)/x')
+
+# Вставляємо легенду
+plt.legend()
+
+# Відображаємо графік
+plt.show()
