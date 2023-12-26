@@ -1,0 +1,36 @@
+import pandas as pd
+
+# Рядок даних
+data_str = "1 2 3 малина x"
+
+# Розбиваємо рядок на список
+data_list = data_str.split()
+
+# Перетворюємо список на словник
+data_dict = {'Column1': data_list}
+
+# Створюємо датафрейм зі словника
+df = pd.DataFrame(data_dict)
+
+# Додаємо нову колонку "Type" для визначення типу значення
+df['Type'] = df['Column1'].apply(lambda x: 'Number' if x.isdigit() else 'Word')
+
+# Виводимо датафрейм
+print("Датафрейм:")
+print(df)
+print()
+
+# Агрегація за числами
+numeric_aggregation = df[df['Type'] == 'Number']['Column1'].astype(int).agg(
+    ['sum', 'mean'])
+
+# Агрегація за словами
+word_aggregation = ', '.join(df[df['Type'] == 'Word']['Column1'])
+
+# Виводимо результати агрегації без зайвих рядків
+print("Агрегація за числами:")
+print(numeric_aggregation.to_string(index=False))
+print()
+
+print("Агрегація за словами:")
+print(word_aggregation)
