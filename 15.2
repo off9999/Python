@@ -15,16 +15,28 @@ if choice.lower() == 'graph':
   monthly_data = df.groupby(df['Date'].dt.to_period('M'))['Total'].sum()
 
   most_popular_month = monthly_data.idxmax()
+
   plt.figure(figsize=(10, 6))
-  monthly_data.plot(kind='bar', color='skyblue')
+  ax = monthly_data.plot(kind='bar', color='skyblue')
   plt.title('Загальна кількість велосипедистів за місяцями')
   plt.xlabel('Місяці')
   plt.ylabel('Загальна кількість велосипедистів')
   plt.xticks(rotation=45)
+
+  ax.annotate(
+      f"Найбільш популярний місяць для велосипедистів: {most_popular_month}",
+      xy=(0, 1),
+      xycoords="axes fraction",
+      xytext=(10, -10),
+      textcoords="offset points",
+      ha="left",
+      va="top",
+      fontsize=8,
+      bbox=dict(boxstyle="round", alpha=0.1),
+  )
+
   plt.tight_layout()
   plt.show()
-
-  print(f"Найбільш популярний місяць для велосипедистів: {most_popular_month}")
 
 elif choice.lower() == 'dataframe':
   print(df)
