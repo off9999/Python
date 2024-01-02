@@ -1,0 +1,82 @@
+import nltk
+from nltk.corpus import gutenberg
+from nltk.probability import FreqDist
+import matplotlib.pyplot as plt
+import string
+from nltk.corpus import stopwords
+
+nltk.download('punkt')
+nltk.download('stopwords')
+
+file_name = 'shakespeare-hamlet.txt'
+hamlet_text = gutenberg.raw(file_name)
+
+
+def get_filtered_words(words):
+  stop_words = set(stopwords.words('english'))
+  punctuation = set(string.punctuation)
+  additional_stop_words = ["'d", "'s", "hamlet"]
+
+  filtered_words = [
+      word.lower() for word in words
+      if word.lower() not in stop_words and word.lower() not in punctuation
+      and word.lower() not in additional_stop_words
+  ]
+  return filtered_words
+
+
+def plot_word_frequency(words, title):
+  word_freq = FreqDist(words)
+  top_words = word_freq.most_common(10)
+  if not top_words:
+    print("Список порожній, є проблема з фільтрацією")
+    return
+
+  words, frequencies = zip(*top_words)
+  plt.figure(figsize=(10, 6))
+  plt.bar(words, frequencies)
+  plt.title(title)
+  plt.xlabel('Слова')
+  plt.ylabel('Частота')
+  plt.xticks(rotation=45)
+  plt.show()
+
+
+def display_top_words_and_diagram(words, title):
+  print(f"\n{title}")
+  top_words = FreqDist(words).most_common(10)
+  print("Топ 10 слів:", top_words)
+  plot_word_frequency(words, title)
+
+
+def main():
+  words = nltk.word_tokenize(hamlet_text)
+
+  while True:
+    print("\nМеню:")
+    print("1. 10 найбільш вживаних слів у тексті Shakespeare Hamlet")
+    print(
+        "2. 10 найбільш вживаних слів у фільтрованому тексті Shakespeare Hamlet"
+    )
+    print("3. Вихід")
+
+    choice = input("Введіть ваш вибір (1, 2 або 3): ")
+
+    if choice == '1':
+      display_top_words_and_diagram(
+          words, '10 найбільш вживаних слів у тексті Shakespeare Hamlet')
+    elif choice == '2':
+      filtered_words = get_filtered_words(words)
+      display_top_words_and_diagram(
+          filtered_words,
+          '10 найбільш вживаних слів у фільтрованому тексті Shakespeare Hamlet'
+      )
+    elif choice == '3':
+      print("Завершення програми.")
+      break
+    else:
+      print("Неправильний вибір. Будь ласка, введіть 1, 2 або 3.")
+
+
+if __name__ == "__main__":
+  main()
